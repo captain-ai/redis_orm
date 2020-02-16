@@ -466,6 +466,7 @@ module RedisOrm
       @persisted = persisted
 
       # if this model uses uuid then id is a string otherwise it should be casted to Integer class
+
       id = @@use_uuid_as_id[model_name] ? id : id.to_i
 
       instance_variable_set(:"@id", id) if id
@@ -500,6 +501,7 @@ module RedisOrm
       @id
     end
 
+
     alias :to_key :id
     
     def to_s
@@ -531,7 +533,9 @@ module RedisOrm
 
     def get_next_id
       if @@use_uuid_as_id[model_name]
-        @@uuid.generate(:compact)
+        self_initialised_uuid = @uuid
+        self_initialised_uuid || @@uuid.generate(:compact)
+
       else
         $redis.incr("#{model_name}:id")
       end
